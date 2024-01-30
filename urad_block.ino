@@ -299,7 +299,7 @@ void enviarDatosAMatlab() {
         
     }
 
-    // Linefeed between bufferI and bufferQ
+    
     Serial.println();
 
     // Send bufferQ data to MATLAB
