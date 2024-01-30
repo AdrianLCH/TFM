@@ -98,11 +98,6 @@ void detection(uint16_t bufferI[], uint16_t bufferQ[]) {
     const uint16_t max_iterations = 5000;
     uint16_t iterations, temp;
 
-    // This is moved to inicialization: I take full control of the SPI bus (very rude!)
-    // SPI configuration
-    //SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));
-    //delayMicroseconds(100);
-    //SPI.transfer(255);
 
     //Send configuration to uRAD by SPI
     conf[7] = compute_crc(conf);
@@ -128,7 +123,6 @@ void detection(uint16_t bufferI[], uint16_t bufferQ[]) {
 
     delayMicroseconds(20);
 
-    // Are results ready?
     iterations = 0;
     do {
         digitalWrite(pin_SS, LOW);
@@ -174,41 +168,16 @@ void detection(uint16_t bufferI[], uint16_t bufferQ[]) {
     delayMicroseconds(20);
 
     conf[5] &= 0b11011111; // The conf is not used anymore!
-    /*SPI.endTransaction();*/
+
     return;
 
 error:
     conf[5] |= 0b00100000; // Use the conf next time again
-    /*SPI.endTransaction();*/
+
     return;
 }
 
-/*
-Alternative 0 (the optimum one) -> Beware, destructive!
 
-    SPI.transfer(bufferQ, 2*Ns)
-
-Alternative 1
-
-    for (i=0; i<Ns; i++) {
-        bufferQ[i] = SPI.transfer(0);
-        bufferQ[i] |= (SPI.transfer(0)<<8);
-    }
-
-Alternative 2
-
-    for (i=0; i<Ns; i++) {
-        temp = SPI.transfer16(0);
-        bufferQ[i] = (temp>>8) | (temp<<8);
-    }
-
-Alternative 3
-
-    for (i=0; i<2*Ns; i++) {
-        ((uint8_t*) bufferQ)[i] = SPI.transfer(0);
-    }
-
-*/
 
 class Array2D
 {
@@ -271,9 +240,7 @@ void setup() {
 
 void loop() {
   if (loopCount < Np) {
-    //while (!Serial.available()) {};
-    //char rcv = Serial.read();
-    //if (rcv != 'm') return;
+
 
     for (int i=0; i<Np; i++) {
         timesmed[i] = micros();
@@ -303,13 +270,13 @@ void loop() {
 
     }
 }else {
-  // Enviar datos a MATLAB
+ 
         enviarDatosAMatlab();
 
-        // Otras acciones de preparación para enviar datos a MATLAB
+   
 
         while (true) {
-            // Mantener el programa en un bucle infinito para que no continúe ejecutándose
+     
         }
 }
 
@@ -317,12 +284,12 @@ void loop() {
 
 }
 void enviarDatosAMatlab() {
-    // Enviar el número de muestras a MATLAB
+    // Send the number of samples to MATLAB
     Serial.println();
     Serial.print("Ns: ");
     Serial.println(Ns);
 
-    // Enviar los datos de bufferI a MATLAB
+    // Send bufferI data to MATLAB
     Serial.print("bufferI: ");
     for (int row = 0; row < Np; row++) {
         for (int i = 0; i < Ns; i++) {
@@ -332,10 +299,10 @@ void enviarDatosAMatlab() {
         
     }
 
-    // Salto de línea entre bufferI y bufferQ
+    // Linefeed between bufferI and bufferQ
     Serial.println();
 
-    // Enviar los datos de bufferQ a MATLAB
+    // Send bufferQ data to MATLAB
     Serial.print("bufferQ: ");
     for (int row = 0; row < Np; row++) {
         for (int i = 0; i < Ns; i++) {
@@ -356,7 +323,7 @@ for (int temp = 0; temp < Np; temp++) {
     }
 }
 
-    // Salto de línea antes de "END"
+    // Line break before "END
         Serial.println();
     Serial.print("END");
 }
